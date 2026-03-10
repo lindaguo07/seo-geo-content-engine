@@ -28,6 +28,41 @@ This project helps answer a practical growth question:
 
 Instead of treating research, writing, metadata, and GEO optimization as separate tasks, this project organizes them into one repeatable pipeline.
 
+## Best For
+
+- SEO teams scaling content production without turning into generic AI writing
+- SaaS and DTC teams building search-ready and AI-answer-ready content systems
+- agencies that need one workflow for keyword research, SERP analysis, writing, and packaging
+- operators who want publishable output instead of disconnected research notes
+
+## Start With These Prompts
+
+```text
+write article: best llm observability tools
+```
+
+```text
+create SEO content for ai seo tracking
+```
+
+```text
+show available keywords
+```
+
+## External Access And Minimum Credentials
+
+This skill may use:
+
+- a keyword tracker such as Google Sheets
+- a vetted search API such as SerpAPI for live SERP analysis
+
+Recommended minimum setup:
+
+- `GOOGLE_SHEETS_TRACKER_URL`: read-only or public keyword tracker
+- `SERPAPI_API_KEY`: live search retrieval
+
+If those are not available, the workflow should fall back to user-provided keyword lists, CSV exports, or pasted SERP data instead of assuming hidden access.
+
 **About Dageno.ai**
 
 [Dageno.ai](https://dageno.ai) is an AI SEO platform for brands, SaaS teams, SEO operators, agencies, and AI-search growth teams that want to scale search- and AI-ready content production across both traditional search and answer engines.

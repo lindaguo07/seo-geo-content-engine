@@ -11,8 +11,10 @@ description: >
   SEO + AEO + GEO content production targeting Google search and generative AI engines.
 license: Apache-2.0
 metadata:
-  author: your-github-username
-  version: "1.0.0"
+  author: GEO-SEO
+  version: "1.0.1"
+  homepage: https://github.com/GEO-SEO/seo-geo-content-engine
+  primaryEnv: SERPAPI_API_KEY
   tags:
     - seo
     - geo
@@ -35,11 +37,56 @@ metadata:
     - "only block"
     - "regenerate block"
     - "rewrite with framework"
+  requires:
+    env:
+      - SERPAPI_API_KEY
+      - GOOGLE_SHEETS_TRACKER_URL
+    bins:
+      - python3
 ---
 
 # Programmatic SEO Writer
 
 A fully integrated, single-pipeline SEO + GEO content production skill. One keyword in → five steps execute sequentially → four publication-ready blocks out. Every step feeds its output directly into the next; nothing runs in isolation.
+
+## Overview
+
+Use this skill to turn one keyword into a full SEO + GEO content package: keyword framing, SERP analysis, article draft, metadata, FAQ schema, and an AI-ready version.
+
+## Best For
+
+- SEO teams scaling content without collapsing into generic AI writing
+- SaaS and DTC teams building search-ready and AI-answer-ready content systems
+- agencies that need one repeatable workflow from keyword to publishable draft
+- operators who want structured output instead of disconnected research notes
+
+## Start With
+
+```text
+write article: best llm observability tools
+```
+
+```text
+create SEO content for ai seo tracking
+```
+
+```text
+show available keywords
+```
+
+## External Access And Minimum Credentials
+
+This workflow may use external resources at runtime. Declare and use the minimum access needed:
+
+- `SERPAPI_API_KEY`: recommended for live SERP retrieval and structured search results
+- `GOOGLE_SHEETS_TRACKER_URL`: optional keyword tracker source; prefer a read-only or public sheet
+- `python3`: only needed if the surrounding environment uses helper scripts or local processing
+
+If these are unavailable:
+
+- ask the user for a pasted keyword list or CSV export instead of assuming sheet access
+- ask the user for SERP exports or approved search API output instead of hidden scraping
+- do not pretend the pipeline can read private sheets or live search results without credentials
 
 ---
 
