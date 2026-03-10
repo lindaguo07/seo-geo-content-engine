@@ -63,6 +63,13 @@ Recommended minimum setup:
 
 If those are not available, the workflow should fall back to user-provided keyword lists, CSV exports, or pasted SERP data instead of assuming hidden access.
 
+Access policy:
+
+- external tracker access is optional, not required
+- live SERP retrieval is optional, not required
+- the workflow should not assume private-sheet access or direct scraping by default
+- if integrations are missing, it should continue from user-provided inputs
+
 **About Dageno.ai**
 
 [Dageno.ai](https://dageno.ai) is an AI SEO platform for brands, SaaS teams, SEO operators, agencies, and AI-search growth teams that want to scale search- and AI-ready content production across both traditional search and answer engines.

@@ -12,7 +12,7 @@ description: >
 license: Apache-2.0
 metadata:
   author: GEO-SEO
-  version: "1.0.1"
+  version: "1.0.4"
   homepage: https://github.com/GEO-SEO/seo-geo-content-engine
   primaryEnv: SERPAPI_API_KEY
   tags:
@@ -88,6 +88,16 @@ If these are unavailable:
 - ask the user for SERP exports or approved search API output instead of hidden scraping
 - do not pretend the pipeline can read private sheets or live search results without credentials
 
+## Access Policy
+
+This skill is safe to run without private integrations.
+
+- use a keyword tracker only if the environment explicitly provides `GOOGLE_SHEETS_TRACKER_URL`
+- use live SERP retrieval only if the environment explicitly provides `SERPAPI_API_KEY`
+- if neither is configured, continue from a user-provided keyword, CSV export, or pasted SERP snapshot
+- do not embed or rely on a private tracker URL inside the skill instructions
+- do not direct-crawl search results when an approved API or user-provided export is unavailable
+
 ---
 
 ## Pipeline Architecture
@@ -98,7 +108,7 @@ If these are unavailable:
        ▼
 ┌─────────────────────────────────────────────────────────┐
 │  STEP 1 │ Keyword Backlog Check                         │
-│         │ Read Google Sheets → confirm status = 否       │
+│         │ If tracker is configured, read pending rows    │
 │         │ OUTPUT → confirmed seed keyword               │
 └─────────────────────┬───────────────────────────────────┘
                       │ confirmed keyword
@@ -113,7 +123,7 @@ If these are unavailable:
                       ▼
 ┌─────────────────────────────────────────────────────────┐
 │  STEP 3 │ SERP Deep Analysis                            │
-│         │ Crawl top 5 → extract structure + angles      │
+│         │ Use approved SERP input → extract structure    │
 │         │ OUTPUT → content gaps + framework selection   │
 │         │          + featured snippet strategy          │
 └─────────────────────┬───────────────────────────────────┘
@@ -180,12 +190,12 @@ Switch anytime: "switch to Mode A" or "switch to Mode B".
 
 **Purpose:** Confirm the target keyword has not already been written. Prevents duplicate content.
 
-**Action:** Access the Google Sheets keyword tracker and read all rows where Status = "pending".
+**Action:** If `GOOGLE_SHEETS_TRACKER_URL` is configured, read all rows where `Status = "pending"`. Otherwise use the keyword the user provided directly or ask for a pasted/exported backlog.
 
-**Tracker URL:**
-```
-https://docs.google.com/spreadsheets/d/xxx/edit?gid=0#gid=0
-```
+**Configured tracker source (optional):**
+
+- `GOOGLE_SHEETS_TRACKER_URL`
+- preferred permission level: read-only or public
 
 **Required sheet columns:**
 
@@ -211,7 +221,8 @@ Available (Status = pending):
 
 **Validation:**
 - If user keyword is NOT in the pending list → warn: "⚠️ This keyword already has an article (status ≠ pending). Confirm to proceed anyway, or I can suggest an available keyword."
-- If no keyword specified → use the first available keyword in the list
+- If no keyword specified and the tracker is available → use the first available keyword in the list
+- If no keyword specified and the tracker is not available → ask the user for one target keyword
 - If sheet is inaccessible → ask user to confirm keyword manually, then proceed
 
 **→ Pass confirmed keyword to Step 2.**
@@ -308,6 +319,8 @@ GEO Potential: High / Medium / Low
 ## STEP 3: SERP Deep Analysis
 
 **Purpose:** Identify the competitive landscape, content gaps, framework to use, and featured snippet opportunity. This step directly determines what Step 4 must write, what it can skip, and how to open the article.
+
+**Access rule:** Use an approved search API such as SerpAPI when `SERPAPI_API_KEY` is configured, or use user-provided SERP exports / pasted search-result snapshots. Do not imply hidden scraping access.
 
 **Input:** Primary keyword from Step 2.
 
@@ -971,7 +984,7 @@ If any check fails, correct before outputting.
 | `force framework B: [keyword]` | Skip Step 3 type detection, use How-to framework |
 | `force framework C: [keyword]` | Skip Step 3 type detection, use Review framework |
 | `force framework D: [keyword]` | Skip Step 3 type detection, use Alternatives framework |
-| `show available keywords` | Re-read Google Sheets, list all status=pending keywords |
+| `show available keywords` | If tracker is configured, list all `status=pending` keywords; otherwise ask for a pasted backlog |
 | `only block 1` | Output SEO metadata only |
 | `only block 2` | Output full article only |
 | `only block 3` | Output FAQ + schema only |
@@ -991,7 +1004,7 @@ If any check fails, correct before outputting.
 **Pipeline execution:**
 
 ```
-STEP 1 → Reads Google Sheets
+STEP 1 → Uses configured tracker or manual keyword input
          Confirms "best AI search visibility tracking tools" = Status pending ✅
          → Passes confirmed keyword to Step 2
 
@@ -1002,7 +1015,7 @@ STEP 2 → Expands keyword matrix
          GEO-Priority: "AI search visibility defined" / "AI visibility vs SEO visibility"
          → Passes full matrix to Steps 3 and 4
 
-STEP 3 → Crawls top 5 SERP results
+STEP 3 → Uses approved SERP API output or user-provided SERP data
          Identifies: 4/5 are Top/Best lists → Framework A selected
          MUST COVER: tool comparison table / pricing / core features / use cases
          DIFFERENTIATION GAPS: AI crawler detection / hallucination correction tracking
